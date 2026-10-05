@@ -1,5 +1,6 @@
-# Copyright (c) 2026 Marc Lavoie. Updated 2026-10-01.
-name: Publish LusoVela installer for Microsoft Store
+# Copyright (c) 2026 Marc Lavoie. Updated 2026-10-04.
+# Marc Lavoie, 2026-10-04: Keep the public Pages URL without republishing installer binaries or download links.
+name: Publish LusoVela availability notice
 on:
   push:
     branches: [main]
@@ -16,15 +17,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Download and verify release for current Store draft
+      - name: Create download-free Pages content
         shell: bash
         run: |
           set -euo pipefail
-          # Preserve the user's existing draft URL. Freeze these bytes after submission.
-          mkdir -p site/v1.4.17
-          curl --fail --location --retry 3 --silent --show-error --output site/v1.4.17/LusoVela-Setup-1.4.17.exe https://github.com/MLavoie6927/lusovela-releases/releases/download/v1.4.18/LusoVela-Setup-1.4.18.exe
-          echo '85c31269ff751a02b923884cf393640017223405d296e7bae68dd215cd260c74  site/v1.4.17/LusoVela-Setup-1.4.17.exe' | sha256sum --check
-          echo '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="robots" content="noindex"><title>LusoVela installer</title><p><a href="v1.4.17/LusoVela-Setup-1.4.17.exe">Download LusoVela 1.4.18 for Windows x64</a></p></html>' > site/index.html
+          mkdir -p site
+          printf '%s\n' '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><title>LusoVela downloads</title><p>Downloads are temporarily unavailable.</p></html>' > site/index.html
           touch site/.nojekyll
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
@@ -37,6 +35,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy Pages artifact
+      - name: Deploy download-free Pages artifact
         id: deployment
         uses: actions/deploy-pages@v4
